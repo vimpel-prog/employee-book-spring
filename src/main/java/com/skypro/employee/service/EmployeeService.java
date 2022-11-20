@@ -1,7 +1,9 @@
 package com.skypro.employee.service;
 
+import com.skypro.employee.Exception.InvalidEmployeeArgumentException;
 import com.skypro.employee.model.Employee;
 import com.skypro.employee.record.EmployeeRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -24,11 +26,11 @@ public class EmployeeService {
     }
 
     public Employee addEmployee(EmployeeRequest employeeRequest) {
-        if (employeeRequest.getFirstName() == null || employeeRequest.getLastName() == null) {
-            throw new IllegalArgumentException("Employee name should be set");
+        if (!StringUtils.isAlpha(employeeRequest.getFirstName()) || !StringUtils.isAlpha(employeeRequest.getLastName())) {
+            throw new InvalidEmployeeArgumentException();
         }
-        Employee employee = new Employee(employeeRequest.getFirstName(),
-                employeeRequest.getLastName(),
+        Employee employee = new Employee(StringUtils.capitalize(employeeRequest.getFirstName()),
+                StringUtils.capitalize(employeeRequest.getLastName()),
                 employeeRequest.getDepartment(),
                 employeeRequest.getSalary());
         employees.put(employee.getId(), employee);
@@ -38,13 +40,13 @@ public class EmployeeService {
     public Employee getEmployeeMinSalary() {
         return employees.values().stream()
                 .min(new ComparatorEmployee())
-                .get();
+                .orElseThrow();
     }
 
     public Employee getEmployeeMaxSalary() {
         return employees.values().stream()
                 .max(new ComparatorEmployee())
-                .get();
+                .orElseThrow();
     }
 
     public Collection<Employee> getHighSalaryEmployees() {
