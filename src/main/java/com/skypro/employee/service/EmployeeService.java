@@ -57,5 +57,8 @@ public class EmployeeService {
                 .filter(employee -> employee.getSalary()>allSalary/ employees.size())
                 .collect(Collectors.toList());
     }
+    public Employee removeEmployee(int id){
+       return employees.remove(id);
+    }
 
 }
